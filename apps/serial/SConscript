@@ -1,0 +1,20 @@
+Import('env', 'libs')
+
+import os
+
+libnames = ['cutest']
+deps = [libs[name] for name in libnames]
+files = env.GetBuildPath(deps)
+paths = [os.path.split(file_)[0] for file_ in files]
+
+env = env.Clone()
+env.Append(LIBPATH=paths)
+env.Append(CPPPATH=paths)
+env.Append(LIBS=libnames)
+
+obj = env.StaticObject(target='serial.o', source=['serial.c'])
+elf = env.Program(target='serial.elf', source=[obj])
+objcopy_cmd = "avr-objcopy -O ihex -R .eeprom $SOURCE $TARGET"
+hex_ = env.Command('serial.hex', elf, objcopy_cmd)
+
+Return('hex_')

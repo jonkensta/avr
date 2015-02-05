@@ -1,0 +1,3 @@
+Import('env')
+haar = env.StaticLibrary('haar', ['haar.c'])
+Return('haar')

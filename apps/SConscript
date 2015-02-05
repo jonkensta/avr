@@ -1,23 +1,5 @@
-Import('env')
-
-from os.path import splitext
-
-apps = dict()
-for file in Glob('*.c'):
-    app = splitext(file.name)[0]
-
-    obj = env.StaticObject(target=app+'.o', source=app+'.c')
-    elf = env.Program(target=app+'.elf', source=obj)
-
-    avr_objcopy = ' '.join([
-        'avr-objcopy',
-        '-O ihex',
-        '-R .eeprom',
-        '$SOURCE',
-        '$TARGET',
-        ])
-    hex = env.Command(app+'.hex', elf, avr_objcopy)
-
-    apps[app] = hex
-
+Import('env', 'libs')
+dirs = ['serial']
+apps = [SConscript(dir_+'/SConscript', exports=['env', 'libs']) for dir_ in dirs]
+apps = dict(zip(dirs, apps))
 Return('apps')

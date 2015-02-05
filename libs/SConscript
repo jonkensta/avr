@@ -1,0 +1,5 @@
+Import('env')
+dirs = ['haar', 'cutest']
+libs = [SConscript(dir_+'/SConscript', exports=['env']) for dir_ in dirs]
+libs = dict(zip(dirs, libs))
+Return('libs')
