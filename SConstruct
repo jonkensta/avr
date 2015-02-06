@@ -78,7 +78,7 @@ Default(all_)
 ###########
 # Aliases #
 ###########
-size = env.Command('size', apps.values(), "avr-size $SOURCE")
+size = env.Command('size', apps.values(), "avr-size $SOURCES")
 
 selected = list(set(COMMAND_LINE_TARGETS).intersection(apps))
 if selected:
