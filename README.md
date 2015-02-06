@@ -20,14 +20,10 @@ Arduino Libraries
 1. Git clone https://github.com/Earlz/make-wiring
 2. `cd make-wiring`
 3. Run the following commands:
-
-    ./build.rb build arduino
-
-    ./build.rb build Wire
-
-    ./build.rb build SPI
-
-    ./build.rb build SoftwareSerial
+    - `./build.rb build arduino`
+    - `./build.rb build Wire`
+    - `./build.rb build SPI`
+    - `./build.rb build SoftwareSerial`
 
    This will create the directory `output` in the current directory.
 4. `sudo mv output /usr/share/arduino`
