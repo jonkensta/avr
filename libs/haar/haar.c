@@ -11,13 +11,13 @@ haar_pass(int8_t* in, int8_t* ws, size_t len)
     for (int idx=0; idx<half_len; idx++)
     {
         int lhs_idx = idx << 1;
-        int8_t lhs = in[lhs_idx] >> 1;
+        int16_t lhs = in[lhs_idx];
 
         int rhs_idx = lhs_idx + 1;
-        int8_t rhs = in[rhs_idx] >> 1;
+        int16_t rhs = in[rhs_idx];
 
-        in[idx] = lhs + rhs;
-        ws[idx] = lhs - rhs;
+        in[idx] = (lhs + rhs) >> 1;
+        ws[idx] = (lhs - rhs) >> 1;
     }
 
     memcpy(in+half_len, ws, half_len);
@@ -37,7 +37,7 @@ haar(int8_t* in, int8_t* ws, size_t len)
 }
 
 void
-haar8(int8_t in, int8_t* ws)
+haar8(int8_t* in, int8_t* ws)
 {
     haar(in, ws, 8);
 }
