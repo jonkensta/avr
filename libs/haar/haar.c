@@ -23,7 +23,6 @@ haar_pass(int8_t* in, int8_t* ws, size_t len)
     memcpy(in+half_len, ws, half_len);
 }
 
-
 static inline void
 haar(int8_t* in, int8_t* ws, size_t len)
 {
