@@ -11,13 +11,14 @@ Install the following software packages on your system:
 - avr-libc
 - avrdude
 - scons
+The above packages can usually be found through your system's package manager.
 
 You also need to install the Arduino libraries;
 to do this, please follow the instructions in the next section.
 
 Arduino Libraries
 -----------------
-1. Git clone https://github.com/Earlz/make-wiring
+1. `git clone https://github.com/Earlz/make-wiring`
 2. `cd make-wiring`
 3. Run the following commands:
     - `./build.rb build arduino`
@@ -27,6 +28,7 @@ Arduino Libraries
 
    This will create the directory `output` in the current directory.
 4. `sudo mv output /usr/share/arduino`
+
    The build script will look for the arduino libraries in this folder.
 
 Quick start
