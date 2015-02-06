@@ -1,16 +1,18 @@
-Import('env', 'libs')
+Import('env', 'libs', 'incs')
 
 import os
 
-libnames = ['cutest']
-deps = [libs[name] for name in libnames]
-files = env.GetBuildPath(deps)
-paths = [os.path.split(file_)[0] for file_ in files]
-
 env = env.Clone()
-env.Append(LIBPATH=paths)
-env.Append(CPPPATH=paths)
+libnames = ['Wire', 'arduino', 'cutest']
 env.Append(LIBS=libnames)
+
+libnodes = [libs[n] for n in libnames]
+libfiles = env.GetBuildPath(libnodes)
+libpaths = list(set([os.path.split(f)[0] for f in libfiles]))
+env.Append(LIBPATH=libpaths)
+
+incpaths = list(set([incs[n] for n in libnames]))
+env.Append(CPPPATH=incpaths)
 
 obj = env.StaticObject(target='serial.o', source=['serial.c'])
 elf = env.Program(target='serial.elf', source=[obj])

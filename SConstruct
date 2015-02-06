@@ -1,3 +1,5 @@
+import os
+
 #################
 # Build options #
 #################
@@ -43,7 +45,6 @@ AddOption(
 #####################
 env = Environment()
 env.Replace(CC='avr-g++')
-env.Append(CPPPATH=[ARDUINO_INC])
 ccflags = [
     "-O"+GetOption('opt'),
     "-DF_CPU={0:0.0f}UL".format(GetOption('freq')),
@@ -51,19 +52,21 @@ ccflags = [
     "-c",
     ]
 env.Append(CCFLAGS=ccflags)
-env.Append(LIBS=['arduino'])
-env.Append(LIBPATH=[ARDUINO_LIB])
 env.Append(LINKFLAGS=['-mmcu=atmega328p'])
 
 #############
 # Libraries #
 #############
-libs = SConscript('libs/SConscript', exports=['env'])
+libs, incs = SConscript('libs/SConscript', exports=['env'])
+for name in ['arduino', 'SPI', 'Wire', 'SoftwareSerial']:
+    libfname = 'lib{0}.a'.format(name)
+    libs[name] = File(os.path.join(ARDUINO_LIB, libfname))
+    incs[name] = Dir(ARDUINO_INC)
 
 ################
 # Applications #
 ################
-apps = SConscript('apps/SConscript', exports=['env', 'libs']) # Dict of apps
+apps = SConscript('apps/SConscript', exports=['env', 'libs', 'incs'])
 Default(apps.values())
 
 for name, hex_ in apps.items():
