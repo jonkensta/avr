@@ -1,5 +1,5 @@
 Import('env', 'libs', 'incs')
-dirs = ['serial']
+dirs = ['serial', 'test_haar']
 scripts = [dir_+'/SConscript' for dir_ in dirs]
 apps = [SConscript(s, exports=['env', 'libs', 'incs']) for s in scripts]
 apps = dict(zip(dirs, apps))

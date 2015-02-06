@@ -1,0 +1,27 @@
+Import('env', 'libs', 'incs')
+
+import os
+
+env = env.Clone()
+libnames = ['arduino', 'cutest', 'haar']
+env.Append(LIBS=libnames)
+
+def get_lib_path(libname):
+    node = libs[libname]
+    fpath = env.GetBuildPath(node)
+    return os.path.split(fpath)[0]
+
+libpaths = map(get_lib_path, libnames)
+libpaths = list(set(libpaths))
+env.Append(LIBPATH=libpaths)
+
+incpaths = [incs[n] for n in libnames]
+incpaths = list(set(incpaths))
+env.Append(CPPPATH=incpaths)
+
+obj = env.StaticObject(target='test_haar.o', source=['test_haar.c'])
+elf = env.Program(target='test_haar.elf', source=[obj])
+objcopy_cmd = "avr-objcopy -O ihex -R .eeprom $SOURCE $TARGET"
+hex_ = env.Command('test_haar.hex', elf, objcopy_cmd)
+
+Return('hex_')
