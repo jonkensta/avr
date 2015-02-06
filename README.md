@@ -11,6 +11,7 @@ Install the following software packages on your system:
 - avr-libc
 - avrdude
 - scons
+
 The above packages can usually be found through your system's package manager.
 
 You also need to install the Arduino libraries;
