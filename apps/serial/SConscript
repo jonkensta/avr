@@ -9,10 +9,7 @@ env.Append(LIBS=libnames)
 def get_lib_path(libname):
     node = libs[libname]
     fpath = env.GetBuildPath(node)
-    try:
-        return os.path.split(fpath)[0]
-    except Exception:
-        import pdb; pdb.set_trace()
+    return os.path.split(fpath)[0]
 
 libpaths = map(get_lib_path, libnames)
 libpaths = list(set(libpaths))
