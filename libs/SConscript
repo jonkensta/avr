@@ -1,7 +1,7 @@
-Import('env')
-dirs = ['haar', 'cutest']
-scripts = [dir_+'/SConscript' for dir_ in dirs]
-libs = [SConscript(s, exports=['env']) for s in scripts]
-libs = dict(zip(dirs, libs))
-incs = {dir_: Dir(dir_) for dir_ in dirs}
-Return('libs', 'incs')
+Import('env', 'libs', 'incs')
+dirs = ['haar', 'cutest', 'codec']
+
+for dir_ in dirs:
+    script = dir_+'/SConscript'
+    libs[dir_] = SConscript(script, exports=['env', 'libs', 'incs'])
+    incs[dir_] = Dir(dir_)

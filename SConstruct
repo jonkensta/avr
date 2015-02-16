@@ -57,11 +57,13 @@ env.Append(LINKFLAGS=['-mmcu=atmega328p'])
 #############
 # Libraries #
 #############
-libs, incs = SConscript('libs/SConscript', exports=['env'])
+libs = dict()
+incs = dict()
 for name in ['arduino', 'SPI', 'Wire', 'SoftwareSerial']:
     libfname = 'lib{0}.a'.format(name)
     libs[name] = File(os.path.join(ARDUINO_LIB, libfname))
     incs[name] = Dir(ARDUINO_INC)
+SConscript('libs/SConscript', exports=['env', 'libs', 'incs'])
 
 ################
 # Applications #
