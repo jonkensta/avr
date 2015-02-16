@@ -1,5 +1,5 @@
 Import('env', 'libs', 'incs')
-dirs = ['haar', 'cutest', 'codec']
+dirs = ['haar', 'codec']
 
 for dir_ in dirs:
     script = dir_+'/SConscript'

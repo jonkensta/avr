@@ -1,3 +1,0 @@
-Import('env')
-cutest = env.StaticLibrary('cutest', ['CuTest.c'])[0]
-Return('cutest')
