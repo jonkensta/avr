@@ -2,7 +2,6 @@
 
 #include "haar.h"
 
-
 void
 haar_pass(int8_t* in, int8_t* ws, size_t len)
 {
@@ -27,12 +26,8 @@ static inline void
 haar(int8_t* in, int8_t* ws, size_t len)
 {
     for (size_t slen=len; slen >= 2; slen >>= 1)
-    {
         for (size_t offset=0; offset < len; offset += slen)
-        {
             haar_pass(in+offset, ws, slen);
-        }
-    }
 }
 
 void
@@ -45,4 +40,22 @@ void
 haar32(int8_t* in, int8_t* ws)
 {
     haar(in, ws, 32);
+}
+
+static inline void
+loghaar(int8_t* in, int8_t* ws, size_t len)
+{
+    uint16_t start = 0;
+    for (size_t slen=len; slen >= 2; slen >>= 1)
+    {
+        for (size_t offset=start; offset < len; offset += slen)
+            haar_pass(in+offset, ws, slen);
+        start += (slen >> 1);
+    }
+}
+
+void
+loghaar16(int8_t* in, int8_t* ws)
+{
+    haar(in, ws, 16);
 }
