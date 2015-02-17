@@ -4,17 +4,17 @@
 #define __ASSERT_USE_STDERR
 #include <assert.h>
 
-int
+void
 test_all_ones(void)
 {
     int8_t in[8];
     for (int idx=0; idx<8; idx++)
         in[idx] = 1;
 
-    int8_t ws[8];
+    int8_t ws[4];
     haar8(in, ws);
 
-    int8_t out[8] = {1, 0, 0, 0, 0, 0, 0, 0};
+    const int8_t out[8] = {1, 0, 0, 0, 0, 0, 0, 0};
     for (int idx=0; idx<8; idx++)
         assert(out[idx] == in[idx]);
 }
