@@ -11,9 +11,6 @@ libnames = [name for name in libnames if libs[name] is not None]
 libnodes = [libs[name] for name in libnames]
 env.Append(LIBS=libnodes)
 
-libpaths = [env.GetBuildPath(name) for name in libnames]
-env.Append(LIBPATH=libpaths)
-
 obj = env.StaticObject(target='test_haar.o', source=['test_haar.c'])
 elf = env.Program(target='test_haar.elf', source=[obj])
 objcopy_cmd = "avr-objcopy -O ihex -R .eeprom $SOURCE $TARGET"
