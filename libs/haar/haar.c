@@ -31,6 +31,28 @@ haar(int8_t* in, int8_t* ws, size_t len)
 }
 
 void
+haar4(int8_t* in)
+{
+    int16_t sum0 = in[0] + in[1];
+    int16_t sum1 = in[2] + in[3];
+
+    sum0 >>= 1;
+    sum1 >>= 1;
+
+    in[0] = (sum0 + sum1) >> 1;
+    in[1] = (sum0 - sum1) >> 1;
+
+    int16_t diff0 = in[0] - in[1];
+    int16_t diff1 = in[2] - in[3];
+
+    diff0 >>= 1;
+    diff1 >>= 1;
+
+    in[2] = (diff0 + diff1) >> 1;
+    in[3] = (diff0 - diff1) >> 1;
+}
+
+void
 haar8(int8_t* in, int8_t* ws)
 {
     haar(in, ws, 8);
