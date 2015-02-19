@@ -1,0 +1,5 @@
+Import('env', 'libs', 'incs')
+
+elshield = None
+
+Return('elshield')
