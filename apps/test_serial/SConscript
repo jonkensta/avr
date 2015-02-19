@@ -11,7 +11,7 @@ libnames = [name for name in libnames if libs[name] is not None]
 libnodes = [libs[name] for name in libnames]
 env.Append(LIBS=libnodes)
 
-app = 'serial'
+app = 'test_serial'
 obj = env.StaticObject(target=app+'.o', source=[app+'.cpp'])
 elf = env.Program(target=app+'.elf', source=[obj])
 objcopy_cmd = "avr-objcopy -O ihex -R .eeprom $SOURCE $TARGET"
