@@ -11,9 +11,10 @@ libnames = [name for name in libnames if libs[name] is not None]
 libnodes = [libs[name] for name in libnames]
 env.Append(LIBS=libnodes)
 
-obj = env.StaticObject(target='test_haar.o', source=['test_haar.c'])
-elf = env.Program(target='test_haar.elf', source=[obj])
+app = 'test_haar'
+obj = env.StaticObject(target=app+'.o', source=[app+'.cpp'])
+elf = env.Program(target=app+'.elf', source=[obj])
 objcopy_cmd = "avr-objcopy -O ihex -R .eeprom $SOURCE $TARGET"
-hex_ = env.Command('test_haar.hex', elf, objcopy_cmd)
+hex_ = env.Command(app+'.hex', elf, objcopy_cmd)
 
 Return('hex_')

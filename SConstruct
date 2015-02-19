@@ -44,26 +44,31 @@ AddOption(
 # Build environment #
 #####################
 env = Environment()
-env.Replace(CC='avr-g++')
+
+env.Replace(CC='avr-gcc')
+env.Replace(CXX='avr-g++')
+env.Replace(AR='avr-ar')
+
 ccflags = [
     "-O"+GetOption('opt'),
     "-DF_CPU={0:0.0f}UL".format(GetOption('freq')),
     "-mmcu=atmega328p",
-    "-c",
     ]
 env.Append(CCFLAGS=ccflags)
-env.Append(LINKFLAGS=['-mmcu=atmega328p'])
+env.Append(CXXFLAGS=ccflags)
+
+linkflags = [
+    '-mmcu=atmega328p',
+    '-gc-sections', 
+    '-ffunction-sections',
+    '-fdata-sections',
+    ]
+env.Append(LINKFLAGS=linkflags)
 
 #############
 # Libraries #
 #############
-libs = dict()
-incs = dict()
-for name in ['arduino', 'SPI', 'Wire', 'SoftwareSerial']:
-    libfname = 'lib{0}.a'.format(name)
-    libs[name] = File(os.path.join(ARDUINO_LIB, libfname))
-    incs[name] = Dir(ARDUINO_INC)
-SConscript('libs/SConscript', exports=['env', 'libs', 'incs'])
+libs, incs = SConscript('libs/SConscript', exports=['env'])
 
 ################
 # Applications #

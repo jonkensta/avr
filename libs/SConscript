@@ -1,7 +1,16 @@
-Import('env', 'libs', 'incs')
-dirs = ['haar', 'codec', 'twi']
-
+Import('env')
+dirs = [
+    'arduino',
+    'SPI',
+    'Wire',
+    'codec',
+    'elshield',
+    'haar',
+    ]
+libs = dict()
+incs = dict()
 for dir_ in dirs:
     script = dir_+'/SConscript'
     libs[dir_] = SConscript(script, exports=['env', 'libs', 'incs'])
     incs[dir_] = Dir(dir_)
+Return('libs', 'incs')
