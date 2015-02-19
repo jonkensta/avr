@@ -1,11 +1,6 @@
-import os
-
 #################
 # Build options #
 #################
-
-ARDUINO_INC = "/usr/share/arduino/include"
-ARDUINO_LIB = "/usr/share/arduino/lib"
 
 AddOption(
     '--opt',
