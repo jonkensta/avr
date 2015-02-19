@@ -14,17 +14,6 @@ AddOption(
     )
 
 AddOption(
-    '--freq',
-    default=16e6,
-    dest='freq',
-    type='float',
-    nargs=1,
-    action='store',
-    metavar='CPU',
-    help='MCU CPU clock frequency'
-    )
-
-AddOption(
     '--port',
     default='/dev/ttyACM0',
     dest='port',
@@ -46,7 +35,7 @@ env.Replace(AR='avr-ar')
 
 ccflags = [
     "-O"+GetOption('opt'),
-    "-DF_CPU={0:0.0f}UL".format(GetOption('freq')),
+    "-DF_CPU=16000000UL",
     "-mmcu=atmega328p",
     ]
 env.Append(CCFLAGS=ccflags)
