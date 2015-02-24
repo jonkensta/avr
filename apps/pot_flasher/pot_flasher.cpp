@@ -1,8 +1,7 @@
 #include <Arduino.h>
 
-#define SAMPLE_RATE 2
+#define SAMPLE_RATE 44
 #define ADCS 1
-#define HYST 0
 #include <AudioCodec.h>
 #include <elshield.h>
 
@@ -19,7 +18,7 @@ void loop()
 
 // timer1 interrupt routine - all data processed here
 volatile uint16_t adc_counter = 0;
-const uint16_t adc_count_mask = 0x000F;
+const uint16_t adc_count_mask = 0x003F;
 
 volatile uint8_t el_channel = 0;
 volatile uint16_t el_counter = 0;
@@ -27,11 +26,10 @@ volatile uint16_t el_count_threshold = 0xFFFF;
 
 ISR(TIMER1_COMPA_vect, ISR_NAKED)
 {
-    if (!(adc_counter & adc_count_mask)) {
-        uint16_t adc_val;
-        AudioCodec_ADC(&adc_val);
+    uint16_t adc_val;
+    AudioCodec_ADC(&adc_val);
+    if (!(adc_counter & adc_count_mask))
         el_count_threshold = adc_val;
-    }
     adc_counter++;
 
     if (el_counter < el_count_threshold) {
