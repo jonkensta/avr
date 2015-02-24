@@ -59,6 +59,12 @@ haar8(int8_t* in, int8_t* ws)
 }
 
 void
+haar16(int8_t* in, int8_t* ws)
+{
+    haar(in, ws, 16);
+}
+
+void
 haar32(int8_t* in, int8_t* ws)
 {
     haar(in, ws, 32);

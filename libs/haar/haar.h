@@ -10,6 +10,9 @@ void
 haar8(int8_t* in, int8_t* ws);
 
 void
+haar16(int8_t* in, int8_t* ws);
+
+void
 haar32(int8_t* in, int8_t* ws);
 
 #endif /* #ifndef HAAR_H */
