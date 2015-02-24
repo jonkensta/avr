@@ -1,38 +1,21 @@
 #ifndef ELSHIELD_H
 #define ELSHIELD_H 1
 
-#include <Arduino.h>
+const int EL_NUM_CH = 3;
 
-static inline void
-el_init(void)
-{
-    pinMode(4, OUTPUT);
-    pinMode(6, OUTPUT);
-    pinMode(7, OUTPUT);
-}
+void
+el_init(void);
 
-static inline void
-el_set_all_off(void)
-{
-    digitalWrite(4, LOW);
-    digitalWrite(6, LOW);
-    digitalWrite(7, LOW);
-}
+void
+el_set_all_off(void);
 
-static inline void
-el_set_ch(uint8_t ch)
-{
-    if (ch > 2) return;
-    uint8_t pin = (ch == 0) ? 4 : ch + 5;
-    digitalWrite(pin, HIGH);
-}
+void
+el_set_ch(uint8_t ch);
 
-static inline void
-el_clear_ch(uint8_t ch)
-{
-    if (ch > 2) return;
-    uint8_t pin = (ch == 0) ? 4 : ch + 5;
-    digitalWrite(pin, LOW);
-}
+void
+el_clear_ch(uint8_t ch);
+
+void
+el_toggle_ch(uint8_t ch);
 
 #endif
