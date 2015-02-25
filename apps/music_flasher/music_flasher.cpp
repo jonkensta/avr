@@ -32,10 +32,15 @@ void loop()
     int8_t window_copy[window_len];
     for (int idx=0; idx < window_len; idx++)
         window_copy[idx] = window[idx];
+
+    main_loop_read = false;
     window_ready = false;
     sei();
 
     // do some processing on the window here
+
+    main_loop_read = true;
+    return;
 }
 
 ISR(TIMER1_COMPA_vect, ISR_NAKED)
@@ -45,7 +50,7 @@ ISR(TIMER1_COMPA_vect, ISR_NAKED)
     static int window_idx = 0;
     static uint16_t counter = 0;
 
-    if (window_ready)
+    if (!main_loopy_ready)
         reti();
 
     int left_out = left_in;
