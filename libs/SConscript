@@ -6,6 +6,7 @@ dirs = [
     'codec',
     'elshield',
     'haar',
+    'neopixel',
     ]
 libs = dict()
 incs = dict()

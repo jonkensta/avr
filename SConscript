@@ -38,15 +38,15 @@ ccflags = [
     "-O"+GetOption('opt'),
     "-DF_CPU=16000000UL",
     "-mmcu=atmega328p",
+    "-fno-use-cxa-atexit",
+    "-ffunction-sections",
+    "-fdata-sections",
     ]
 env.Append(CCFLAGS=ccflags)
-env.Append(CXXFLAGS=ccflags)
 
 linkflags = [
-    '-mmcu=atmega328p',
-    '-gc-sections', 
-    '-ffunction-sections',
-    '-fdata-sections',
+    "-mmcu=atmega328p",
+    "-gc-sections", 
     ]
 env.Append(LINKFLAGS=linkflags)
 
