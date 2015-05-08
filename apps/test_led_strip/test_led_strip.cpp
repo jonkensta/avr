@@ -3,36 +3,47 @@
 
 #include <neopixel.h>
 #include <avr/power.h>
+#include <util/delay.h>
 
 // Which pin on the Arduino is connected to the NeoPixels?
-#define PIN            6
+#define PIN            4
 
 // How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS      16
+#define NUMPIXELS      60
 
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
 Neopixel pixels = Neopixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-int delayval = 500; // delay for half a second
+const int delayval = 100; // delay for half a second
 
 void setup() {
   pixels.begin(); // This initializes the NeoPixel library.
 }
 
-void loop() {
-
-  // For a set of NeoPixels the first NeoPixel is 0, second is 1, all the way up to the count of pixels minus one.
-
+void reset_leds(void) {
   for(int i=0;i<NUMPIXELS;i++){
-
-    // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
-    pixels.setPixelColor(i, pixels.Color(0,150,0)); // Moderately bright green color.
-
-    pixels.show(); // This sends the updated pixel color to the hardware.
-
-    delay(delayval); // Delay for a period of time (in milliseconds).
-
+    pixels.setPixelColor(i, pixels.Color(0,0,0)); // Moderately bright green color.
   }
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+
+void toggle_leds(uint8_t r, uint8_t g, uint8_t b) {
+  for(int i=0;i<NUMPIXELS;i++){
+    pixels.setPixelColor(i, pixels.Color(r, g, b)); // Moderately bright green color.
+    pixels.show(); // This sends the updated pixel color to the hardware.
+    _delay_ms(delayval); // Delay for a period of time (in milliseconds).
+  }
+}
+
+void loop() {
+  reset_leds();
+  toggle_leds(150, 50, 50);
+
+  reset_leds();
+  toggle_leds(50, 150, 50);
+
+  reset_leds();
+  toggle_leds(50, 50, 150);
 }
