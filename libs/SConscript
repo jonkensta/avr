@@ -3,6 +3,7 @@ dirs = [
     'arduino',
     'SPI',
     'Wire',
+    'TimerOne',
     'codec',
     'elshield',
     'haar',
