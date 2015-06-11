@@ -4,6 +4,7 @@ dirs = [
     'SPI',
     'Wire',
     'TimerOne',
+    'SoftwareSerial',
     'codec',
     'elshield',
     'haar',

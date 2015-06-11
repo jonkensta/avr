@@ -70,20 +70,53 @@ haar32(int8_t* in, int8_t* ws)
     haar(in, ws, 32);
 }
 
+void
+haar64(int8_t* in, int8_t* ws)
+{
+    haar(in, ws, 64);
+}
+
+void
+haar128(int8_t* in, int8_t* ws)
+{
+    haar(in, ws, 128);
+}
+
+void
+haar512(int8_t* in, int8_t* ws)
+{
+    haar(in, ws, 512);
+}
+
+void
+haar1024(int8_t* in, int8_t* ws)
+{
+    haar(in, ws, 1024);
+}
+
 static inline void
 loghaar(int8_t* in, int8_t* ws, size_t len)
 {
-    uint16_t start = 0;
-    for (size_t slen=len; slen >= 2; slen >>= 1)
-    {
-        for (size_t offset=start; offset < len; offset += slen)
-            haar_pass(in+offset, ws, slen);
-        start += (slen >> 1);
+    while (len > 0) {
+        haar_pass(in, ws, len);
+        len >>= 1;
     }
 }
 
 void
 loghaar16(int8_t* in, int8_t* ws)
 {
-    haar(in, ws, 16);
+    loghaar(in, ws, 16);
+}
+
+void
+loghaar32(int8_t* in, int8_t* ws)
+{
+    loghaar(in, ws, 32);
+}
+
+void
+loghaar64(int8_t* in, int8_t* ws)
+{
+    loghaar(in, ws, 64);
 }
