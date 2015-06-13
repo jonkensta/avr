@@ -1,0 +1,22 @@
+Import('env', 'libs', 'incs')
+
+env = env.Clone()
+
+libnames = ['SPI', 'arduino']
+
+incpaths = list(set([incs[n] for n in libnames]))
+incpaths.append('utility')
+env.Append(CPPPATH=incpaths)
+
+libnames = [name for name in libnames if libs[name] is not None]
+
+libnodes = [libs[name] for name in libnames]
+env.Append(LIBS=libnodes)
+
+libpaths = [env.GetBuildPath(name) for name in libnames]
+env.Append(LIBPATH=libpaths)
+
+ADC = SConscript('ADC/SConscript', exports=['env', 'libs', 'incs'])
+devices = env.StaticLibrary('devices', [ADC])[0]
+
+Return('devices')

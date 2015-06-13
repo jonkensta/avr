@@ -1,7 +1,7 @@
 Import('env', 'libs', 'incs')
 
 env = env.Clone()
-libnames = ['neopixel', 'SPI', 'TimerOne', 'arduino', 'FHT', 'agc']
+libnames = ['neopixel', 'devices', 'SPI', 'TimerOne', 'arduino', 'FHT', 'AGC']
 
 incpaths = list(set([incs[n] for n in libnames]))
 env.Append(CPPPATH=incpaths)

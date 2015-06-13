@@ -12,6 +12,9 @@
 
 #include <neopixel.h>
 
+#include <AGC.h>
+#include <ADC/MCP3201.h>
+
 ////////////
 // Pixels //
 ////////////
@@ -24,106 +27,35 @@ void setup_pixels(void) {
     pixels.begin();
 }
 
-/////////////////
-// SPI and ADC //
-/////////////////
-
-const int slaveSelectPin = 10;
-
-void setup_spi(void) {
-    SPI.begin();
-    SPI.setDataMode(SPI_MODE0);
-    SPI.setBitOrder(MSBFIRST);
-    SPI.setClockDivider(SPI_CLOCK_DIV2);
-
-    pinMode(slaveSelectPin, OUTPUT);
-    digitalWrite(slaveSelectPin, HIGH);
-}
-
-uint16_t read_spi(void) {
-    // Signal start of transfer
-    digitalWrite(slaveSelectPin, LOW);
-
-    // Transfer data
-    uint8_t dummy = 0;
-    byte high = SPI.transfer(dummy);
-    byte low = SPI.transfer(dummy);
-
-    // Signal stop of transfer
-    digitalWrite(slaveSelectPin, HIGH);
-
-    return ((uint16_t)high << 8) | low;
-}
-
-int16_t read_adc(void) {
-    int16_t value = read_spi();
-
-    // Remove non-data bits
-    const int16_t data_mask = 0x1FFF;
-    value &= data_mask;
-
-    // Remove extra LSB1 bit
-    value >>= 1;
-
-    // Adjust center to zero
-    const int16_t zero_point = (1 << 11);
-    value -= zero_point;
-
-    return value;
-}
-
 ////////////////////
 // Sample capture //
 ////////////////////
 
-volatile uint16_t shift = 0;
+const uint8_t SS_PIN = 10;
+const uint8_t SPI_RATE = SPI_CLOCK_DIV2;
+MCP3201 SPI_ADC = MCP3201(SPI_RATE, SS_PIN);
+
+const uint16_t SAMPLER_ATTACK_RATE = 30000;
+const uint8_t SAMPLER_MARGIN = 3;
+ShiftAGC16 SAMPLER_AGC = ShiftAGC16(SAMPLER_ATTACK_RATE, SAMPLER_MARGIN);
 
 volatile int16_t window[FHT_N];
-volatile bool window_ready = false;
-volatile bool temporal_event = false;
+volatile bool WINDOW_READY = false;
+volatile bool TIME_EVENT = false;
 
-uint16_t calculate_mask(uint16_t shift, const uint8_t margin) {
-    return ~((1 << (15 - (shift + margin))) - 1);
-}
+void capture_sample_callback(void) {
+    int16_t sample = SPI_ADC.read();
 
-uint16_t update_shift(uint16_t shift, int16_t sample) {
-    const uint8_t margin = 3;
-    const uint16_t attack_rate = 30000;
-    static uint16_t attack_count = 0;
-    static uint16_t mask = 0x0000;
-
-    uint16_t abs_sample = (sample >= 0) ? (sample) : (-sample);
-
-    if (!(abs_sample & mask)) {
-        attack_count++;
-
-        if (attack_count >= attack_rate) {
-            attack_count = 0;
-            shift++;
-            mask = calculate_mask(shift, margin);
-        }
-    }
-    else {
-        temporal_event = true;
-        shift--;
-        mask = calculate_mask(shift, margin);
-    }
-
-    return shift;
-}
-
-void capture_sample(void) {
-    int16_t sample = read_adc();
-
-    shift = update_shift(shift, sample);
-    sample <<= shift;
+    bool event = SAMPLER_AGC.update(sample);
+    if (event) TIME_EVENT = true;
+    sample = SAMPLER_AGC.apply(sample);
 
     static uint16_t sample_index = 0;
     window[sample_index] = sample;
     sample_index++;
 
     if (sample_index >= FHT_N) {
-        window_ready = true;
+        WINDOW_READY = true;
         sample_index = 0;
         Timer1.stop();
     }
@@ -132,7 +64,8 @@ void capture_sample(void) {
 void setup_sampler(void) {
     const uint16_t sampling_period_us = 200;
     Timer1.initialize(sampling_period_us);
-    Timer1.attachInterrupt(capture_sample);
+    Timer1.attachInterrupt(capture_sample_callback);
+    SPI_ADC.begin();
 }
 
 //////////////
@@ -179,7 +112,6 @@ void setup_sleep(void) {
 
 void setup() {
     setup_pixels();
-    setup_spi();
     setup_sampler();
     setup_sleep();
     setup_colors();
@@ -200,7 +132,7 @@ int map_pixel_to_bin(int pixel) {
 
 void loop() {
     cli();
-    if (!window_ready) {
+    if (!WINDOW_READY) {
         sleep_enable();
         sei();
         sleep_cpu();
@@ -210,7 +142,7 @@ void loop() {
 
     memcpy(fht_input, (const void*)window, sizeof(int16_t) * FHT_N);
 
-    window_ready = false;
+    WINDOW_READY = false;
     Timer1.resume();
     sei();
 
@@ -237,9 +169,9 @@ void loop() {
     }
     pixels.show();
 
-    if (temporal_event) {
+    if (TIME_EVENT) {
         color_mode = next_color_mode(color_mode);
-        temporal_event = false;
+        TIME_EVENT = false;
     }
 
     for (int ii=0; ii<3; ii++)

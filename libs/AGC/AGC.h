@@ -1,6 +1,8 @@
 #ifndef AGC_H
 #define AGC_H 1
 
+#include <inttypes.h>
+
 template <typename T>
 class ShiftAGC {
   public:
@@ -9,10 +11,7 @@ class ShiftAGC {
         : _attack_rate(attack_rate)
         , _margin(margin)
     {
-        _mask = (1 << sizeof(T)) - 1;
     }
-
-    ~ShiftAGC(void);
 
     // Public methods
     inline bool update(T value)
@@ -51,10 +50,14 @@ class ShiftAGC {
     uint32_t _attack_rate;
     uint32_t _attack_count;
 
-    inline T calculate_mask(void)
+    static inline T calculate_mask(uint8_t shift, uint8_t margin)
     {
-        return ~((1 << (sizeof(T) - (_shift + _margin))) - 1);
+        return ~((1 << ((sizeof(T) - 1) - (shift + margin))) - 1);
     }
 };
+
+typedef ShiftAGC<int8_t>  ShiftAGC8;
+typedef ShiftAGC<int16_t> ShiftAGC16;
+typedef ShiftAGC<int32_t> ShiftAGC32;
 
 #endif /* #ifndef AGC_H */
