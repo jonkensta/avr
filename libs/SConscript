@@ -2,6 +2,8 @@ Import('env')
 dirs = [
     'arduino',
     'SPI',
+    'agc',
+    'FHT',
     'Wire',
     'TimerOne',
     'SoftwareSerial',

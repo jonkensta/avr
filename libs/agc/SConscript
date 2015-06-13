@@ -1,0 +1,3 @@
+Import('env')
+agc = None
+Return('agc')
