@@ -1,5 +1,0 @@
-Import('env', 'libs', 'incs')
-
-codec = None
-
-Return('codec')

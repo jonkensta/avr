@@ -1,3 +1,0 @@
-Import('env')
-haar = env.StaticLibrary('haar', 'haar.cpp')[0]
-Return('haar')
