@@ -36,7 +36,7 @@ const uint8_t SS_PIN = 10;
 const uint8_t SPI_RATE = SPI_CLOCK_DIV2;
 MCP3201 SPI_ADC = MCP3201(SPI_RATE, SS_PIN);
 
-ShiftAGC_I16 SAMPLER_AGC = ShiftAGC_I16(2000, 5);
+ShiftAGC_I16 SAMPLER_AGC = ShiftAGC_I16(5000, 5);
 ShiftAGC_I16 TEMPORAL_AGC = ShiftAGC_I16(10000, 1000);
 
 volatile int16_t window[FHT_N];
@@ -154,23 +154,12 @@ void loop() {
     fht_run(); // process the data in the fht
     fht_mag_lin(); // take the output of the fht
 
-    for (int pixel=(3*NUM_PIXELS/4); pixel<NUM_PIXELS; pixel++) {
-        uint16_t bin = map_pixel_to_bin(pixel);
-        fht_lin_out[bin] <<= 3;
-    }
-
-    for (int pixel=(NUM_PIXELS/2); pixel<(3*NUM_PIXELS/4); pixel++) {
-        uint16_t bin = map_pixel_to_bin(pixel);
-        fht_lin_out[bin] <<= 1;
-    }
-
     static ShiftAGC_U16 AGC[4] = {
-        ShiftAGC_U16(2000, 5),
-        ShiftAGC_U16(2000, 5),
-        ShiftAGC_U16(2000, 5),
-        ShiftAGC_U16(2000, 5),
+        ShiftAGC_U16(5000, 500),
+        ShiftAGC_U16(5000, 500),
+        ShiftAGC_U16(5000, 500),
+        ShiftAGC_U16(5000, 500),
     };
-
     for (int pixel=0; pixel<NUM_PIXELS; pixel++) {
         int band = pixel / (NUM_PIXELS / 4);
         uint16_t bin = map_pixel_to_bin(pixel);
