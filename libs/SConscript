@@ -7,10 +7,8 @@ dirs = [
     'Wire',
     'TimerOne',
     'SoftwareSerial',
-    'codec',
     'devices',
     'elshield',
-    'haar',
     'neopixel',
     ]
 libs = dict()
