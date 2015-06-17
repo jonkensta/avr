@@ -1,7 +1,6 @@
 #include <string.h>
 
 #include <avr/sleep.h>
-#include <avr/pgmspace.h>
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -96,7 +95,11 @@ color_mode_t next_color_mode(color_mode_t mode) {
     }
 }
 
-void dither_colors(uint8_t* colors) {
+void disperse_colors(uint8_t* colors, const uint8_t boundary) {
+    uint8_t lhs = (3 * (uint16_t)colors[0]) >> 2;
+    uint8_t rhs = boundary >> 2;
+    colors[0] = lhs + rhs;
+
     for (int ii=1; ii<NUM_PIXELS; ii++) {
         uint8_t lhs = (3 * (uint16_t)colors[ii]) >> 2;
         uint8_t rhs = (colors[ii-1]) >> 2;
@@ -115,22 +118,12 @@ void setup_sleep(void) {
 void setup() {
     setup_pixels();
     setup_sampler();
-    setup_sleep();
     setup_colors();
+    setup_sleep();
 }
 
-int map_pixel_to_bin(int pixel) {
-    return pixel + 1;
-//    if (pixel <= 32)
-//        return pixel + 1;
-//    else if (pixel <= (32+16))
-//        return 2 * (pixel - (32)) + 32;
-//    else if (pixel <= (32+16+8))
-//        return 4 * (pixel - (32+16)) + 64;
-//    else if (pixel <= (32+16+8+4))
-//        return 8 * (pixel - (32+16+8)) + 96;
-//    else
-//        return 0;
+inline int map_pixel_to_bin(int pixel) {
+    return pixel + 2;
 }
 
 void loop() {
@@ -154,14 +147,16 @@ void loop() {
     fht_run(); // process the data in the fht
     fht_mag_lin(); // take the output of the fht
 
-    static ShiftAGC_U16 AGC[4] = {
+    const uint8_t num_bands = 5;
+    static ShiftAGC_U16 AGC[num_bands] = {
+        ShiftAGC_U16(5000, 500),
         ShiftAGC_U16(5000, 500),
         ShiftAGC_U16(5000, 500),
         ShiftAGC_U16(5000, 500),
         ShiftAGC_U16(5000, 500),
     };
     for (int pixel=0; pixel<NUM_PIXELS; pixel++) {
-        int band = pixel / (NUM_PIXELS / 4);
+        int band = pixel / (NUM_PIXELS / num_bands);
         uint16_t bin = map_pixel_to_bin(pixel);
         AGC[band].update(fht_lin_out[bin]);
         fht_lin_out[bin]= AGC[band].apply(fht_lin_out[bin]);
@@ -189,16 +184,8 @@ void loop() {
         TIME_EVENT = false;
     }
 
-    for (int ii=0; ii<3; ii++)
-        colors[ii][0] = 0;
-
-    int color_index;
-    switch (color_mode) {
-        case RED:   color_index = 0; break;
-        case BLUE:  color_index = 1; break;
-        case GREEN: color_index = 2; break;
+    for (int ii=0; ii<3; ii++) {
+        uint8_t boundary = (ii != color_mode) ? 0 : COLOR_MAX;
+        disperse_colors(&(colors[ii][0]), boundary);
     }
-    colors[color_index][0] = COLOR_MAX;
-    for (int ii=0; ii<3; ii++)
-        dither_colors(&(colors[ii][0]));
 }
