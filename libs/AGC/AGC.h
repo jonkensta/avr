@@ -51,7 +51,15 @@ class ShiftAGC_I16 {
 
     inline int16_t apply(int16_t value)
     {
-        return (value << _shift);
+        const int16_t int16_max = 0x3FFF;
+        uint16_t abs_value = (value >= 0) ? (value) : (-value);
+        if (abs_value < _overflow_level) {
+            return (value << _shift);
+        }
+        else {
+            int8_t sign = (value > 0) ? 1 : -1;
+            return sign * int16_max;
+        }
     }
 
   private:
@@ -113,7 +121,11 @@ class ShiftAGC_U16 {
 
     inline uint16_t apply(uint16_t value)
     {
-        return (value << _shift);
+        const uint16_t uint16_max = 0xFFFF;
+        if (value < _overflow_level)
+            return (value << _shift);
+        else
+            return uint16_max;
     }
 
   private:
@@ -175,7 +187,11 @@ class ShiftAGC_U8 {
 
     inline uint8_t apply(uint8_t value)
     {
-        return (value << _shift);
+        const uint8_t uint8_max = 0xFF;
+        if (value < _overflow_level)
+            return (value << _shift);
+        else
+            return uint8_max;
     }
 
   private:
