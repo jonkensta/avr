@@ -6,7 +6,7 @@ Import('env')
 
 AddOption(
     '--opt',
-    default='2',
+    default='3',
     dest='opt',
     type='string',
     nargs=1,
@@ -17,7 +17,7 @@ AddOption(
 
 AddOption(
     '--port',
-    default='/dev/ttyACM0',
+    default='/dev/ttyUSB1',
     dest='port',
     type='string',
     nargs=1,
@@ -37,6 +37,7 @@ env.Replace(AR='avr-ar')
 ccflags = [
     "-O"+GetOption('opt'),
     "-DF_CPU=16000000UL",
+    "-DARDUINO=101",
     "-mmcu=atmega328p",
     ]
 env.Append(CCFLAGS=ccflags)

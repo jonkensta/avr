@@ -9,6 +9,8 @@ dirs = [
     'SoftwareSerial',
     'devices',
     'elshield',
+    'Adafruit_MotorShield',
+    'AccelStepper',
     'neopixel',
     ]
 libs = dict()
