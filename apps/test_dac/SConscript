@@ -1,0 +1,20 @@
+Import('env', 'libs', 'incs')
+
+env = env.Clone()
+libnames = ['devices', 'SPI', 'arduino']
+
+incpaths = list(set([incs[n] for n in libnames]))
+env.Append(CPPPATH=incpaths)
+
+libnames = [name for name in libnames if libs[name] is not None]
+
+libnodes = [libs[name] for name in libnames]
+env.Append(LIBS=libnodes)
+
+app = 'test_dac'
+obj = env.StaticObject(target=app+'.o', source=[app+'.cpp'])
+elf = env.Program(target=app+'.elf', source=[obj])
+objcopy_cmd = "avr-objcopy -O ihex -R .eeprom $SOURCE $TARGET"
+hex_ = env.Command(app+'.hex', elf, objcopy_cmd)
+
+Return('hex_')

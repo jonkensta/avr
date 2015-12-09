@@ -5,7 +5,6 @@ env = env.Clone()
 libnames = ['SPI', 'arduino']
 
 incpaths = list(set([incs[n] for n in libnames]))
-incpaths.append('utility')
 env.Append(CPPPATH=incpaths)
 
 libnames = [name for name in libnames if libs[name] is not None]
@@ -16,8 +15,6 @@ env.Append(LIBS=libnodes)
 libpaths = [env.GetBuildPath(name) for name in libnames]
 env.Append(LIBPATH=libpaths)
 
-adc = SConscript('ADC/SConscript', exports=['env', 'libs', 'incs'])
-dac = SConscript('DAC/SConscript', exports=['env', 'libs', 'incs'])
-devices = env.StaticLibrary('devices', [adc, dac])[0]
+dac = env.Object('MCP4911.cpp')
 
-Return('devices')
+Return('dac')
