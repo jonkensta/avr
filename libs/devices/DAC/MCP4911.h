@@ -4,6 +4,10 @@
 #include "pins_arduino.h"
 #include "SPI.h"
 
+#define BUF  14  // Input buffer control bit
+#define GA   13  // Output gain selection bit
+#define SHDN 12  // Output shutdown control bit
+
 class MCP4911 {
   public:
     // Constructor
@@ -15,7 +19,7 @@ class MCP4911 {
 
     ~MCP4911()
     {
-        this->end();
+        end();
     }
 
     void begin();
