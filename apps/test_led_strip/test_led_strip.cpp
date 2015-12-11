@@ -9,7 +9,7 @@
 #define PIN            4
 
 // How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS      60
+#define NUMPIXELS      300
 
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
@@ -39,11 +39,11 @@ void toggle_leds(uint8_t r, uint8_t g, uint8_t b) {
 
 void loop() {
   reset_leds();
-  toggle_leds(150, 50, 50);
+  toggle_leds(150, 0, 0);
 
   reset_leds();
-  toggle_leds(50, 150, 50);
+  toggle_leds(0, 150, 0);
 
   reset_leds();
-  toggle_leds(50, 50, 150);
+  toggle_leds(0, 0, 150);
 }
