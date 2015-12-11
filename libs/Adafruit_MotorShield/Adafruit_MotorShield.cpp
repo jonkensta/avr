@@ -20,12 +20,7 @@
 #include "Adafruit_MotorShield.h"
 #include <Adafruit_PWMServoDriver.h>
 
-#if defined(ARDUINO_SAM_DUE)
- #define WIRE Wire1
-#else
- #define WIRE Wire
-#endif
-
+#define WIRE Wire
 
 #if (MICROSTEPS == 8)
 uint8_t microstepcurve[] = {0, 50, 98, 142, 180, 212, 236, 250, 255};

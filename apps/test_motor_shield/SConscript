@@ -1,7 +1,7 @@
 Import('env', 'libs', 'incs')
 
 env = env.Clone()
-libnames = ['AccelStepper', 'Adafruit_MotorShield', 'Wire', 'arduino']
+libnames = ['Adafruit_MotorShield', 'Wire', 'arduino']
 
 incpaths = list(set([incs[n] for n in libnames]))
 env.Append(CPPPATH=incpaths)

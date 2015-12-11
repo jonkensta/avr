@@ -17,11 +17,7 @@
 
 #include "Adafruit_PWMServoDriver.h"
 #include <Wire.h>
-#if defined(ARDUINO_SAM_DUE)
- #define WIRE Wire1
-#else
- #define WIRE Wire
-#endif
+#define WIRE Wire
 
 
 Adafruit_PWMServoDriver::Adafruit_PWMServoDriver(uint8_t addr) {
@@ -67,47 +63,26 @@ void Adafruit_PWMServoDriver::setPWM(uint8_t num, uint16_t on, uint16_t off) {
   //Serial.print("Setting PWM "); Serial.print(num); Serial.print(": "); Serial.print(on); Serial.print("->"); Serial.println(off);
 
   WIRE.beginTransmission(_i2caddr);
-#if ARDUINO >= 100
   WIRE.write(LED0_ON_L+4*num);
   WIRE.write(on);
   WIRE.write(on>>8);
   WIRE.write(off);
   WIRE.write(off>>8);
-#else
-  WIRE.send(LED0_ON_L+4*num);
-  WIRE.send((uint8_t)on);
-  WIRE.send((uint8_t)(on>>8));
-  WIRE.send((uint8_t)off);
-  WIRE.send((uint8_t)(off>>8));
-#endif
   WIRE.endTransmission();
 }
 
 uint8_t Adafruit_PWMServoDriver::read8(uint8_t addr) {
   WIRE.beginTransmission(_i2caddr);
-#if ARDUINO >= 100
   WIRE.write(addr);
-#else
-  WIRE.send(addr);
-#endif
   WIRE.endTransmission();
 
   WIRE.requestFrom((uint8_t)_i2caddr, (uint8_t)1);
-#if ARDUINO >= 100
   return WIRE.read();
-#else
-  return WIRE.receive();
-#endif
 }
 
 void Adafruit_PWMServoDriver::write8(uint8_t addr, uint8_t d) {
   WIRE.beginTransmission(_i2caddr);
-#if ARDUINO >= 100
   WIRE.write(addr);
   WIRE.write(d);
-#else
-  WIRE.send(addr);
-  WIRE.send(d);
-#endif
   WIRE.endTransmission();
 }
