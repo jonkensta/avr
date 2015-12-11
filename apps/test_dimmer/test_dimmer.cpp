@@ -1,80 +1,80 @@
-/*
-AC Light Control
- 
- Updated by Robert Twomey <rtwomey@u.washington.edu>
- 
- Changed zero-crossing detection to look for RISING edge rather
- than falling.  (originally it was only chopping the negative half
- of the AC wave form). 
- 
- Also changed the dim_check() to turn on the Triac, leaving it on 
- until the zero_cross_detect() turn's it off.
- 
- Adapted from sketch by Ryan McLaughlin <ryanjmclaughlin@gmail.com>
- http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1230333861/30
- 
- */
-
 #include <Arduino.h>
-#include <TimerOne.h>           // Avaiable from http://www.arduino.cc/playground/Code/Timer1
+#include <TimerOne.h>
 
-volatile int i=0;               // Variable to use as a counter
-volatile boolean zero_cross=0;  // Boolean to store a "switch" to tell us if we have crossed zero
-int AC_pin = 11;                // Output to Opto Triac
-int dim = 0;                    // Dimming level (0-128)  0 = on, 128 = 0ff
-int inc=1;                      // counting up or down, 1=up, -1=down
+#include "DutyCycler.h"
 
-int freqStep = 65;    // This is the delay-per-brightness step in microseconds.
-// It is calculated based on the frequency of your voltage supply (50Hz or 60Hz)
-// and the number of brightness steps you want. 
-// 
-// The only tricky part is that the chopper circuit chops the AC wave twice per
-// cycle, once on the positive half and once at the negative half. This meeans
-// the chopping happens at 120Hz for a 60Hz supply or 100Hz for a 50Hz supply. 
+const uint8_t NUM_DUTY_CYCLERS = 2;
+DutyCycler duty_cyclers[] = {DutyCycler(5), DutyCycler(6)};
 
-// To calculate freqStep you divide the length of one full half-wave of the power
-// cycle (in microseconds) by the number of brightness steps. 
-//
-// (1000000 uS / 120 Hz) / 128 brightness steps = 65 uS / brightness step
-//
-// 1000000 us / 120 Hz = 8333 uS, length of one half-wave.
-
-void zero_cross_detect() {    
-  zero_cross = true;               // set the boolean to true to tell our dimming function that a zero cross has occured
-  i=0;
-  digitalWrite(AC_pin, LOW);       // turn off TRIAC (and AC)
-}                                 
-
-// Turn on the TRIAC at the appropriate time
-void dim_check() {                   
-  if(zero_cross == true) {              
-    if(i>=dim) {                     
-      digitalWrite(AC_pin, HIGH); // turn on light       
-      i=0;  // reset time step counter                         
-      zero_cross = false; //reset zero cross detection
-    } 
-    else {
-      i++; // increment time step counter                     
-    }                                
-  }                                  
-}                                   
-
-void setup() {                                      // Begin setup
-  pinMode(AC_pin, OUTPUT);                          // Set the Triac pin as output
-  attachInterrupt(0, zero_cross_detect, RISING);   // Attach an Interupt to Pin 2 (interupt 0) for Zero Cross Detection
-  Timer1.initialize(freqStep);                      // Initialize TimerOne library for the freq we need
-  Timer1.attachInterrupt(dim_check, freqStep);      
-  // Use the TimerOne Library to attach an interrupt
-  // to the function we use to check to see if it is 
-  // the right time to fire the triac.  This function 
-  // will now run every freqStep in microseconds.                                            
+void update_duty_cyclers(void) {
+    for (int index=0; index < NUM_DUTY_CYCLERS; index++)
+        duty_cyclers[index].update();
 }
 
-void loop() {                        
-  dim+=inc;
-  if((dim>=128) || (dim<=0))
-    inc*=-1;
-  delay(18);
+void reset_duty_cyclers(void) {
+    for (int index=0; index < NUM_DUTY_CYCLERS; index++)
+        duty_cyclers[index].reset();
 }
 
+void setup() {
+    for (int index=0; index < NUM_DUTY_CYCLERS; index++)
+        duty_cyclers[index].initialize();
 
+    const uint32_t period = 32; // (10 ** 6) / (120 * 256)
+    Timer1.initialize(period);
+    Timer1.attachInterrupt(update_duty_cyclers);
+
+    const uint8_t interrupt = 0;
+    attachInterrupt(interrupt, reset_duty_cyclers, RISING);
+
+    Serial.begin(9600);
+}
+
+const uint8_t DUTY_CYCLE_LOOKUP[] = {
+#include "lookup_table.inc"
+};
+
+void set_dimness(uint8_t index, uint8_t percentage) {
+    percentage = min(percentage, 100);
+    uint8_t duty_cycle = DUTY_CYCLE_LOOKUP[percentage];
+    index = min(index, 1);
+    duty_cyclers[index].set_duty_cycle(duty_cycle);
+}
+
+int serial_read_int(void) {
+    const int BUFFER_SIZE = 5;
+    char buffer[BUFFER_SIZE];
+
+    int num_chars = 0;
+
+    while (true) {
+        while (!Serial.available())
+            ;
+        int in_char = Serial.read();
+
+        if (in_char == '\r')
+            break;
+
+        if (!isDigit(in_char))
+            num_chars = BUFFER_SIZE;
+
+        if (num_chars < BUFFER_SIZE)
+            buffer[num_chars++] = in_char;
+    }
+
+    if (num_chars >= BUFFER_SIZE)
+        return -1;
+
+    buffer[num_chars] = '\0';
+    return atoi(buffer);
+}
+
+void loop() {
+    for (int index=0; index < NUM_DUTY_CYCLERS; index++)
+    {
+        int percentage = serial_read_int();
+        while (percentage < 0)
+            percentage = serial_read_int();
+        set_dimness(index, percentage);
+    }
+}
