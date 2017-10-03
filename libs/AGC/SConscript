@@ -1,3 +1,7 @@
 Import('env')
-agc = None
-Return('agc')
+
+env.Append(CPPPATH=[env.Dir('.')])
+
+lib = None  # header only library
+
+Return('lib')

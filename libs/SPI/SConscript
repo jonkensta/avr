@@ -1,21 +1,10 @@
-Import('env', 'libs', 'incs')
+Import('env', 'libs')
+
+env.Append(CPPPATH=[env.Dir('.')])
 
 env = env.Clone()
+env.Append(libs=[libs['arduino']])
 
-libnames = ['arduino']
+lib = env.StaticLibrary('SPI', ['SPI.cpp'])[0]
 
-incpaths = list(set([incs[n] for n in libnames]))
-incpaths.append('utility')
-env.Append(CPPPATH=incpaths)
-
-libnames = [name for name in libnames if libs[name] is not None]
-
-libnodes = [libs[name] for name in libnames]
-env.Append(LIBS=libnodes)
-
-libpaths = [env.GetBuildPath(name) for name in libnames]
-env.Append(LIBPATH=libpaths)
-
-SPI = env.StaticLibrary('SPI', ['SPI.cpp'])[0]
-
-Return('SPI')
+Return('lib')

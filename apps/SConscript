@@ -1,7 +1,14 @@
-Import('env', 'libs', 'incs')
+Import('env', 'libs')
+
 import os
-dirs = next(os.walk('.'))[1]
-scripts = [dir_+'/SConscript' for dir_ in dirs]
-apps = [SConscript(s, exports=['env', 'libs', 'incs']) for s in scripts]
-apps = dict(zip(dirs, apps))
+import glob
+
+dirs = [node for node in glob.iglob('*') if os.path.isdir(node)]
+
+def call_sconscript(dir_):
+    fpath = os.path.join(dir_, 'SConscript')
+    return SConscript(fpath, exports=['env', 'libs'])
+
+apps = {dir_: call_sconscript(dir_) for dir_ in dirs}
+
 Return('apps')

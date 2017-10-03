@@ -1,12 +1,10 @@
-Import('env', 'libs', 'incs')
+Import('env', 'libs')
+
+env.Append(CPPPATH=[env.Dir('.')])
 
 env = env.Clone()
+env.Append(LIBS=[libs['arduino']])
 
-libnames = ['arduino']
+lib = env.StaticLibrary('elshield', ['elshield.cpp'])[0]
 
-incpaths = list(set([incs[n] for n in libnames]))
-env.Append(CPPPATH=incpaths)
-
-elshield = env.StaticLibrary('elshield', ['elshield.cpp'])[0]
-
-Return('elshield')
+Return('lib')

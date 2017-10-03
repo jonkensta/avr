@@ -1,22 +1,24 @@
 Import('env')
+
+import os
+import types
+
 dirs = [
     'arduino',
     'SPI',
+    'Wire',
     'AGC',
     'FHT',
-    'Wire',
     'TimerOne',
-    'SoftwareSerial',
     'devices',
     'elshield',
-    'Adafruit_MotorShield',
-    'AccelStepper',
     'neopixel',
-    ]
-libs = dict()
-incs = dict()
+]
+
+libs = {}
+
 for dir_ in dirs:
-    script = dir_+'/SConscript'
-    libs[dir_] = SConscript(script, exports=['env', 'libs', 'incs'])
-    incs[dir_] = Dir(dir_)
-Return('libs', 'incs')
+    fpath = os.path.join(dir_, 'SConscript')
+    libs[dir_] = SConscript(fpath, exports=['env', 'libs'])
+
+Return('libs')

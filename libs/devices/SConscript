@@ -1,23 +1,12 @@
-Import('env', 'libs', 'incs')
+Import('env', 'libs')
+
+env.Append(CPPPATH=[env.Dir('include')])
 
 env = env.Clone()
 
-libnames = ['SPI', 'arduino']
+deps = ['arduino', 'SPI', 'Wire']
+env.Append(libs=[libs[name] for name in deps])
 
-incpaths = list(set([incs[n] for n in libnames]))
-incpaths.append('utility')
-env.Append(CPPPATH=incpaths)
+lib = env.StaticLibrary('devices', env.Glob('lib/*.cpp'))[0]
 
-libnames = [name for name in libnames if libs[name] is not None]
-
-libnodes = [libs[name] for name in libnames]
-env.Append(LIBS=libnodes)
-
-libpaths = [env.GetBuildPath(name) for name in libnames]
-env.Append(LIBPATH=libpaths)
-
-adc = SConscript('ADC/SConscript', exports=['env', 'libs', 'incs'])
-dac = SConscript('DAC/SConscript', exports=['env', 'libs', 'incs'])
-devices = env.StaticLibrary('devices', [adc, dac])[0]
-
-Return('devices')
+Return('lib')

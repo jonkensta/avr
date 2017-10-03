@@ -1,6 +1,10 @@
 Import('env')
+
+env.Append(CPPPATH=[env.Dir('.')])
+
 env = env.Clone()
-env.Append(CPPPATH=['.'])
 env.Append(CXXFLAGS=['-Wno-attributes'])
-arduino = env.StaticLibrary('arduino', [Glob('*.c'), Glob('*.cpp')])[0]
-Return('arduino')
+
+lib = env.StaticLibrary('arduino', [Glob('*.c'), Glob('*.cpp')])[0]
+
+Return('lib')
