@@ -4,5 +4,5 @@ env = env.Clone()
 env.Append(LIBS=[libs['arduino']])
 
 obj = env.StaticObject('blink.cpp')
-hex_ = env.HexObject(obj)
+hex_ = env.HexObject(obj)[0]
 Return('hex_')

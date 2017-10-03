@@ -1,10 +1,3 @@
-HexObject = Builder(
-    action="$OBJCOPY -O ihex -R .eeprom $SOURCE $TARGET",
-    suffix = '.hex', src_suffix = '.o'
-)
-builders = dict(HexObject=HexObject)
-env = Environment(BUILDERS=builders)
-
 #################
 # Build options #
 #################
@@ -14,10 +7,16 @@ AddOption(
     default=False,
     dest='flash',
     action='store_true',
-    metavar='FLASH',
     help='avrdude flash'
 )
 
+AddOption(
+    '--size',
+    default=False,
+    dest='size',
+    action='store_true',
+    help='flash rom size'
+)
 
 AddOption(
     '--opt',
@@ -41,6 +40,36 @@ AddOption(
     help='avrdude flash device port'
 )
 
+
+############
+# Builders #
+############
+
+HexObject = Builder(
+    action="$OBJCOPY -O ihex -R .eeprom $SOURCE $TARGET",
+    suffix = '.hex', src_suffix = '.o'
+)
+
+avrdude = ' '.join([
+    'sudo',
+    '$AVRDUDE',
+    '-F', '-V', '-e',
+    '-c arduino',
+    '-p ATMEGA328P',
+    '-P'+GetOption('port'),
+    '-b 115200',
+    '-U flash:w:$SOURCE:i',
+])
+Flash = Builder(action=avrdude, suffix='.flash', src_suffix='.hex')
+
+HexSize = Builder(
+    action="$AVRSIZE $SOURCES",
+    suffix = '.size', src_suffix = '.hex'
+)
+
+builders = dict(HexObject=HexObject, Flash=Flash, HexSize=HexSize)
+env = Environment(BUILDERS=builders)
+
 #####################
 # Build environment #
 #####################
@@ -49,6 +78,8 @@ env.Replace(CC='avr-gcc')
 env.Replace(CXX='avr-g++')
 env.Replace(AR='avr-ar')
 env.Replace(OBJCOPY='avr-objcopy')
+env.Replace(AVRDUDE='avrdude')
+env.Replace(AVRSIZE='avr-size')
 
 ccflags = [
     "-O"+GetOption('opt'),
@@ -68,4 +99,4 @@ linkflags = [
 ]
 env.Append(LINKFLAGS=linkflags)
 
-env.SConscript('SConscript', exports=['env'])
+SConscript('SConscript', exports=['env'])
