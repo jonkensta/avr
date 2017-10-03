@@ -27,8 +27,6 @@ else:
         env.Alias(name, hex_)
     env.Alias('all', apps.values())
 
-#size = env.Command('size', apps.values(), "avr-size $SOURCES")
-
 selected = list(set(COMMAND_LINE_TARGETS).intersection(apps))
 
 if GetOption('clean'):
