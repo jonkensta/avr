@@ -47,7 +47,7 @@ AddOption(
 
 HexObject = Builder(
     action="$OBJCOPY -O ihex -R .eeprom $SOURCE $TARGET",
-    suffix = '.hex', src_suffix = '.o'
+    suffix = '.hex', src_suffix = '.elf'
 )
 
 avrdude = ' '.join([
