@@ -7,18 +7,21 @@ const uint8_t NUM_DUTY_CYCLERS = 2;
 DutyCycler duty_cyclers[] = {DutyCycler(5), DutyCycler(6)};
 
 void update_duty_cyclers(void) {
-    for (int index=0; index < NUM_DUTY_CYCLERS; index++)
+    for (int index=0; index < NUM_DUTY_CYCLERS; index++) {
         duty_cyclers[index].update();
+    }
 }
 
 void reset_duty_cyclers(void) {
-    for (int index=0; index < NUM_DUTY_CYCLERS; index++)
+    for (int index=0; index < NUM_DUTY_CYCLERS; index++) {
         duty_cyclers[index].reset();
+    }
 }
 
 void setup() {
-    for (int index=0; index < NUM_DUTY_CYCLERS; index++)
+    for (int index=0; index < NUM_DUTY_CYCLERS; index++) {
         duty_cyclers[index].initialize();
+    }
 
     const uint32_t period = 32; // (10 ** 6) / (120 * 256)
     Timer1.initialize(period);
@@ -48,8 +51,10 @@ int serial_read_int(void) {
     int num_chars = 0;
 
     while (true) {
-        while (!Serial.available())
-            ;
+        while (!Serial.available()) {
+            // do nothing
+        }
+
         int in_char = Serial.read();
 
         if (in_char == '\r')
@@ -70,11 +75,11 @@ int serial_read_int(void) {
 }
 
 void loop() {
-    for (int index=0; index < NUM_DUTY_CYCLERS; index++)
-    {
+    for (int index=0; index < NUM_DUTY_CYCLERS; index++) {
         int percentage = serial_read_int();
-        while (percentage < 0)
+        while (percentage < 0) {
             percentage = serial_read_int();
+        }
         set_dimness(index, percentage);
     }
 }

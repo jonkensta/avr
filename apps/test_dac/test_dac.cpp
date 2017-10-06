@@ -1,5 +1,5 @@
 #include <avr/pgmspace.h>
-#include <DAC/MCP4911.h>
+#include <MCP4911.h>
 
 /* SIN table data and methods */
 const uint16_t SIN_TABLE[] PROGMEM = {

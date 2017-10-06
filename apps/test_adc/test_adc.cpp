@@ -13,7 +13,7 @@
 #include <neopixel.h>
 
 #include <AGC.h>
-#include <ADC/MCP3201.h>
+#include <MCP3201.h>
 
 const uint8_t NUM_BINS = FHT_N >> 1;
 
