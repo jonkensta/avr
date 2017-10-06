@@ -1,49 +1,81 @@
-// NeoPixel Ring simple sketch (c) 2013 Shae Erisson
-// released under the GPLv3 license to match the rest of the AdaFruit NeoPixel library
-
 #include <neopixel.h>
-#include <avr/power.h>
 #include <util/delay.h>
 
-// Which pin on the Arduino is connected to the NeoPixels?
 #define PIN            4
+#define NUM_ROWS       8
+#define NUM_COLS       34
+#define NUM_PIXELS     (NUM_ROWS*NUM_COLS)
+#define BRIGHTNESS     125
 
-// How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS      300
+Neopixel pixels = Neopixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-// When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
-// Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
-// example for more information on possible values.
-Neopixel pixels = Neopixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+const int DELAY = 40; // delay in ms
+uint32_t ON = pixels.Color(0, 0, 255);
+const uint32_t OFF = pixels.Color(0, 0, 0);
 
-const int delayval = 100; // delay for half a second
 
 void setup() {
-  pixels.begin(); // This initializes the NeoPixel library.
+    pixels.begin();
+    pixels.setBrightness(BRIGHTNESS);
 }
 
-void reset_leds(void) {
-  for(int i=0;i<NUMPIXELS;i++){
-    pixels.setPixelColor(i, pixels.Color(0,0,0)); // Moderately bright green color.
-  }
-  pixels.show(); // This sends the updated pixel color to the hardware.
+bool
+index_is_even(int index) {
+    return (index % 2 == 0);
 }
 
-void toggle_leds(uint8_t r, uint8_t g, uint8_t b) {
-  for(int i=0;i<NUMPIXELS;i++){
-    pixels.setPixelColor(i, pixels.Color(r, g, b)); // Moderately bright green color.
-    pixels.show(); // This sends the updated pixel color to the hardware.
-    _delay_ms(delayval); // Delay for a period of time (in milliseconds).
-  }
+uint16_t
+index_to_pixel(uint8_t row, uint8_t col) {
+    uint16_t pixel;
+    if (index_is_even(row)) {
+        pixel = (NUM_COLS * row) + col;
+    } else {
+        pixel = (NUM_COLS * (row + 1)) - col - 1;
+    }
+    return pixel;
 }
 
-void loop() {
-  reset_leds();
-  toggle_leds(150, 0, 0);
+void
+set_column(uint8_t col, uint32_t color) {
+    for (uint8_t row=0; row<NUM_ROWS; row++) {
+        uint16_t pixel = index_to_pixel(row, col);
+        pixels.setPixelColor(pixel, color);
+    }
+}
 
-  reset_leds();
-  toggle_leds(0, 150, 0);
+uint32_t
+get_next_color(uint32_t current_color) {
+    uint8_t r = (uint8_t)(current_color >> 16);
+    uint8_t g = (uint8_t)(current_color >> 8);
+    uint8_t b = (uint8_t)(current_color);
 
-  reset_leds();
-  toggle_leds(0, 0, 150);
+    if (r > 0 && g == 0) {
+        r--;
+        b++;
+    } else if (b > 0 && r == 0) {
+        b--;
+        g++;
+    } else {
+        g--;
+        r++;
+    }
+
+    return pixels.Color(r, g, b);
+}
+
+void
+loop() {
+    set_column(0, ON);
+    pixels.show();
+
+    for (uint8_t ii=0; ii<NUM_COLS; ii++) {
+        set_column(ii-1, OFF);
+        set_column(ii, ON);
+        pixels.show();
+        _delay_ms(DELAY);
+    }
+
+    set_column(NUM_COLS-1, OFF);
+
+    ON = get_next_color(ON);
 }
