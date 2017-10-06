@@ -4,6 +4,6 @@ env = env.Clone()
 deps = ['neopixel', 'devices', 'SPI', 'TimerOne', 'arduino', 'FHT', 'AGC']
 env.Append(LIBS=[libs[dep] for dep in deps])
 
-elf = env.Program('test_adc.cpp')
+elf = env.Program('test_adc.elf', 'test_adc.cpp')
 hex_ = env.HexObject(elf)
 Return('hex_')

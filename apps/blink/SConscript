@@ -3,6 +3,6 @@ Import('env', 'libs')
 env = env.Clone()
 env.Append(LIBS=[libs['arduino']])
 
-obj = env.StaticObject('blink.cpp')
-hex_ = env.HexObject(obj)[0]
+elf = env.Program('blink.elf', 'blink.cpp')
+hex_ = env.HexObject(elf)[0]
 Return('hex_')

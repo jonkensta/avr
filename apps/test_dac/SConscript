@@ -4,6 +4,6 @@ env = env.Clone()
 deps = ['devices', 'SPI', 'arduino']
 env.Append(LIBS=[libs[dep] for dep in deps])
 
-elf = env.Program('test_dac.cpp')
+elf = env.Program('test_dac.elf', 'test_dac.cpp')
 hex_ = env.HexObject(elf)
 Return('hex_')

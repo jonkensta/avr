@@ -3,6 +3,6 @@ Import('env', 'libs')
 env = env.Clone()
 env.Append(LIBS=[libs['arduino']])
 
-elf = env.Program('test_serial.cpp')
+elf = env.Program('test_serial.elf', 'test_serial.cpp')
 hex_ = env.HexObject(elf)
 Return('hex_')

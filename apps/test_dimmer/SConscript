@@ -4,6 +4,6 @@ env = env.Clone()
 deps = ['TimerOne', 'arduino']
 env.Append(LIBS=[libs[dep] for dep in deps])
 
-elf = env.Program('test_dimmer.cpp')
+elf = env.Program('test_dimmer.elf', 'test_dimmer.cpp')
 hex_ = env.HexObject(elf)
 Return('hex_')

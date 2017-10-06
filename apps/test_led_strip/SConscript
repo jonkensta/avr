@@ -4,6 +4,6 @@ env = env.Clone()
 deps = ['neopixel', 'arduino']
 env.Append(LIBS=[libs[dep] for dep in deps])
 
-elf = env.Program('test_led_strip.cpp')
+elf = env.Program('test_led_strip.elf', 'test_led_strip.cpp')
 hex_ = env.HexObject(elf)[0]
 Return('hex_')

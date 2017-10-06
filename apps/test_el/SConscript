@@ -4,7 +4,7 @@ env = env.Clone()
 deps = ['elshield', 'arduino']
 env.Append(LIBS=[libs[dep] for dep in deps])
 
-elf = env.Program('test_el.cpp')
+elf = env.Program('test_el.elf', 'test_el.cpp')
 hex_ = env.HexObject(elf)
 
 Return('hex_')
