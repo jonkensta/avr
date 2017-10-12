@@ -34,7 +34,7 @@
 class MCP23017 {
     public:
         MCP23017(uint8_t address)
-                : _address(MCP23017_ADDRESS | (address & 0x03))
+                : _address(MCP23017_ADDRESS | (address & 0x07))
         {
             // otherwise empty
         }
@@ -42,10 +42,9 @@ class MCP23017 {
         void begin(void);
 
         void set_pin_mode(uint8_t mode);
-        void set_pull_up(uint8_t mode);
+        void set_pull_up(bool value);
 
         void write(uint16_t);
-        uint16_t read();
 
     private:
         uint8_t _address;
