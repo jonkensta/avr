@@ -42,7 +42,7 @@ class MCP23017 {
         void begin(void);
 
         void set_pin_mode(uint8_t mode);
-        void set_pull_up(bool value);
+        void set_pull_up(uint8_t level);
 
         void write(uint16_t);
 
