@@ -51,7 +51,6 @@ HexObject = Builder(
 )
 
 avrdude = ' '.join([
-    'sudo',
     '$AVRDUDE',
     '-F', '-V', '-e',
     '-c arduino',
