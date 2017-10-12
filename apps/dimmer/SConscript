@@ -1,0 +1,11 @@
+Import('env', 'libs')
+
+env = env.Clone()
+
+deps = ['devices', 'Wire', 'arduino']
+libs = [libs[name] for name in deps]
+env.Append(LIBS=libs)
+
+elf = env.Program('dimmer.elf', 'dimmer.cpp')
+hex_ = env.HexObject(elf)
+Return('hex_')
