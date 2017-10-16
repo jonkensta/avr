@@ -1,0 +1,9 @@
+Import('env', 'libs')
+
+env = env.Clone()
+deps = ['neopixel', 'arduino']
+env.Append(LIBS=[libs[dep] for dep in deps])
+
+elf = env.Program('lumen.elf', 'lumen.cpp')
+hex_ = env.HexObject(elf)[0]
+Return('hex_')
