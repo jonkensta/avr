@@ -9,7 +9,7 @@ const uint16_t NUM_PIXELS = 300;
 
 Neopixel pixels = Neopixel(NUM_PIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-volatile int index = 0;
+volatile uint16_t index = 0;
 const uint16_t NUM_BYTES = 3*NUM_PIXELS;
 
 volatile bool show_pixels = false;
@@ -45,7 +45,7 @@ ISR (SPI_STC_vect) {
     pixels[index++] = SPDR;
     if (index >= NUM_BYTES) {
         index = 0;
-        show_pixels = true;  // set show_pixels flag
+        show_pixels = true;  // signal main loop to show pixels
     }
     SPDR = index;
 }
@@ -59,7 +59,7 @@ void sleep(void) {
 
 void loop (void) {
     if(show_pixels) {
-        show_pixels = false;
+        show_pixels = false;  // restore default
         pixels.show();
     } else {
         sleep();
