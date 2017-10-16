@@ -58,10 +58,10 @@ void sleep(void) {
 
 
 void loop (void) {
-    if(!show_pixels) {
-        sleep();
-    } else {
+    if(show_pixels) {
         show_pixels = false;
         pixels.show();
+    } else {
+        sleep();
     }
 }
